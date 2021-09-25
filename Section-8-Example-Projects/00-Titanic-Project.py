@@ -156,3 +156,67 @@ titanic_df.head()
 sns.catplot(x='Embarked',data=titanic_df,hue='Pclass',order=['C','Q','S'],kind='count')
 
 
+# %%
+# Who was alone and who was with family?
+titanic_df.head()
+
+
+# %%
+titanic_df['Alone'] = titanic_df.SibSp + titanic_df.Parch
+
+
+# %%
+titanic_df['Alone']
+
+
+# %%
+titanic_df['Alone'].loc[titanic_df['Alone'] > 0] = 'With Family'
+
+titanic_df['Alone'].loc[titanic_df['Alone'] == 0] = 'Alone'
+
+
+# %%
+titanic_df.head()
+
+
+# %%
+sns.catplot('Alone', data=titanic_df, palette='Blues', kind='count')
+
+
+# %%
+# What factors helped someone survive the sinking?
+titanic_df['Survivor'] = titanic_df.Survived.map({0:'no',1:'yes'})
+
+sns.catplot('Survivor',data=titanic_df,palette='Set1',kind='count')
+
+
+# %%
+sns.catplot(x='Pclass',y='Survived',data=titanic_df,kind='point') # catalog point plot considering class
+
+
+# %%
+sns.catplot(x='Pclass',y='Survived',hue='person',data=titanic_df,kind='point') # catalog point plot considering class and gender
+
+
+# %%
+sns.lmplot(x='Age',y='Survived',data=titanic_df)
+
+
+# %%
+sns.lmplot(x='Age',y='Survived',hue='Pclass',data=titanic_df,palette='winter')
+
+
+# %%
+generations = [10,20,40,60,80]
+
+sns.lmplot(x='Age',y='Survived',hue='Pclass',data=titanic_df,palette='winter',x_bins=generations)
+
+
+# %%
+sns.lmplot(x='Age',y='Survived',hue='Sex',data=titanic_df,palette='winter',x_bins=generations)
+
+
+# %%
+
+
+
