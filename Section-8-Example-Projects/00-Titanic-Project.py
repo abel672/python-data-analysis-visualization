@@ -215,8 +215,137 @@ sns.lmplot(x='Age',y='Survived',hue='Pclass',data=titanic_df,palette='winter',x_
 # %%
 sns.lmplot(x='Age',y='Survived',hue='Sex',data=titanic_df,palette='winter',x_bins=generations)
 
+# %% [markdown]
+# 
+# 1.) Did the deck have an effect on the passengers survival rate? Did this answer match up with your intuition?
+# 
+# 2.) Did having a family member increase the odds of suriving the crash?
 
 # %%
+titanic_df.head()
 
+
+# %%
+# Add a 'deck' column into our current data frame
+def getDeckLetter(cabin):
+    """This gets the cabin from titanic_df['Cabin'] object"""
+    if type(cabin) == float:
+        return np.nan
+    elif cabin[0] == 'T':
+        return np.nan
+    else:
+        return cabin[0]
+
+# using apply
+titanic_df['Deck'] = titanic_df['Cabin'].apply(getDeckLetter)
+
+
+# %%
+titanic_df.head()
+
+
+# %%
+titanic_deck = titanic_df.dropna(subset=['Deck']) # Getting cleaned decks from titanic data frame
+titanic_deck.head()
+
+
+# %%
+sns.lmplot(x='Age',y='Survived',hue='Deck',data=titanic_deck,palette='winter',
+            hue_order=['A','B','C','D','E','F','G'], x_bins=generations).set(ylim=[-0.4,1.4])
+
+
+# %%
+sns.catplot(x='Deck',y='Survived',data=titanic_deck,palette='winter',order=['A','B','C','D','E','F','G'],kind='point')
+
+
+# %%
+sns.catplot(x='Survivor',hue='Deck',data=titanic_deck,palette='winter',hue_order=['A','B','C','D','E','F','G'],kind='count')
+
+
+# %%
+sns.catplot(x='Survivor',data=titanic_deck,palette='winter',kind='count')
+
+
+# %%
+# Let's see who has deck information
+def getDeckInfoPresent(cabin):
+    """This gets the cabin from titanic_df['Cabin'] object"""
+    if type(cabin) == float:
+        return 'No'
+    elif cabin[0] == 'T':
+        return 'No'
+    else:
+        return 'Yes'
+
+# using apply
+titanic_df['DeckInformation'] = titanic_df['Cabin'].apply(getDeckInfoPresent)
+
+
+# %%
+sns.catplot(x='Survivor',hue='DeckInformation',data=titanic_df,palette='Set1',kind='count',
+            order=['yes','no'],hue_order=['Yes','No'])
+
+
+# %%
+sns.catplot(x='Pclass',hue='DeckInformation',data=titanic_df,palette='Set1',kind='count',
+            order=[1,2,3],hue_order=['Yes','No'])
+
+
+# %%
+sns.catplot(x='Pclass',hue='Deck',data=titanic_deck,palette='Set1',kind='count',
+            order=[1,2,3],hue_order=['A','B','C','D','E','F','G'])
+
+
+# %%
+# Most of the data for the deck is in the first class only. Let's filter it to see it more in detail
+titanic_deck = titanic_deck[titanic_deck['Pclass']==1]
+
+sns.catplot(x='Pclass',hue='Deck',data=titanic_deck,palette='Set1',kind='count')
+
+
+# %%
+sns.catplot(x='Survivor',hue='Deck',data=titanic_deck,palette='winter',
+            hue_order=['A','B','C','D','E'],kind='count')
+
+
+# %%
+# Create a deck survival DataFrame
+decks = ['A','B','C','D','E']
+
+adecks = {}
+deck_survival = {}
+total_on_deck = {}
+rel_deck_survival = {}
+
+for deck in decks:
+    adecks[deck] = deck
+    deck_survival[deck] = titanic_deck['Deck'].loc[titanic_deck['Deck'] == deck].loc[titanic_deck['Survived'] == 1].count()
+    total_on_deck[deck] = titanic_deck['Deck'].loc[titanic_deck['Deck'] == deck].count()
+    rel_deck_survival[deck] = deck_survival[deck] / total_on_deck[deck]
+
+deck_survival_df = DataFrame({'Deck':adecks, 'Deck Survival':deck_survival, 'Total on Deck':total_on_deck, 'Percentage':rel_deck_survival})
+deck_survival_df.head()
+
+
+# %%
+sns.barplot(x='Deck',y='Percentage',data=deck_survival_df,palette='winter')
+
+
+# %%
+sns.catplot(x='Sex',hue='Deck',data=titanic_deck,palette='winter',order=['male','female'],
+            hue_order=['A','B','C','D','E'],kind='count')
+
+
+# %%
+#2.) Did having a family member increase the odds of suriving the crash?
+titanic_df.head()
+
+
+# %%
+sns.catplot(x='Alone',hue='Survivor',data=titanic_df,palette='winter',hue_order=['yes','no'],kind='count')
+
+
+# %%
+titanic_df[titanic_df['Survived']==1].count()
 
 
