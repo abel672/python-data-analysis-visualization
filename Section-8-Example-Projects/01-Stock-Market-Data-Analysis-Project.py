@@ -148,6 +148,7 @@ sns.heatmap(closing_df,annot=True)
 
 
 # %%
+# Risk Analysis
 rets = tech_rets.dropna()
 
 
@@ -172,6 +173,87 @@ for label, x, y in zip(rets.columns, rets.mean(), rets.std()):
 
 
 # %%
+sns.displot(AAPL['Daily Return'].dropna(),bins=100,color='purple')
 
+
+# %%
+rets['AAPL'].quantile(0.05)
+
+
+# %%
+days = 365
+
+dt = 1/days
+
+mu = rets.mean()['GOOG'] # average daily returns
+
+sigma = rets.std()['GOOG'] # standard deviation in those returns
+
+
+# %%
+def stock_monte_carlo(start_price,days,mu,sigma):
+
+    price = np.zeros(days) # arrays of 0, with the length of the number of given days
+    price[0] = start_price
+
+    shock = np.zeros(days)
+    drift = np.zeros(days)
+
+    for x in range(1, days):
+
+        shock[x] = np.random.normal(loc=mu*dt, scale=sigma*np.sqrt(dt))
+
+        drift[x] = mu * dt
+
+        price[x] = price[x-1] + (price[x-1] * (drift[x] + shock[x]))
+    
+    return price
+
+
+# %%
+GOOG.head()
+
+
+# %%
+start_price = 1474.209961
+
+for run in range(100):
+    plt.plot(stock_monte_carlo(start_price, days, mu, sigma))
+
+plt.xlabel('Days')
+plt.ylabel('Price')
+plt.title('Monte Carlo Analysis for Google')
+
+
+# %%
+runs = 10000
+
+simulations = np.zeros(runs)
+
+for run in range(runs):
+    simulations[run] = stock_monte_carlo(start_price, days, mu, sigma)[days-1]
+
+
+# %%
+q = np.percentile(simulations,1)
+
+plt.hist(simulations, bins=200)
+
+# Starting Price
+plt.figtext(0.6, 0.8, s='Start price: $%.2f' %start_price)
+# Mean ending price
+plt.figtext(0.6, 0.7, 'Mean final price: $%.2f' % simulations.mean())
+
+# Variance of the price (within 99% confidence interval)
+plt.figtext(0.6, 0.6, 'VaR(0.99): $%.2f' % (start_price - q,))
+
+# Display 1% quantile
+plt.figtext(0.15, 0.6, 'q(0.99): $%.2f' % q)
+
+# Plot a line at the 1% quantile result
+plt.axvline(x=q, linewidth=4, color='r')
+
+# Title
+plt.title(u'Final price distribution for Google Stock after %s days' % days, weight='bold')
 
 
