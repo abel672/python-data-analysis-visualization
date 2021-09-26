@@ -12,7 +12,7 @@ import numpy as np
 # 
 
 # %%
-import matplotlib.pyplot
+import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set_style('whitegrid')
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -113,5 +113,37 @@ sns.jointplot(x='GOOG',y='MSFT',data=tech_rets,kind='scatter')
 
 # %%
 url = 'https://en.wikipedia.org/wiki/Pearson_correlation_coefficient'
+
+
+# %%
+sns.pairplot(tech_rets.dropna())
+
+
+# %%
+returns_fig = sns.PairGrid(tech_rets.dropna())
+
+returns_fig.map_upper(plt.scatter,color='purple')
+
+returns_fig.map_lower(sns.kdeplot,cmap='cool_d')
+
+returns_fig.map_diag(plt.hist,bins=30)
+
+
+# %%
+returns_fig = sns.PairGrid(closing_df)
+
+returns_fig.map_upper(plt.scatter,color='purple')
+
+returns_fig.map_lower(sns.kdeplot,cmap='cool_d')
+
+returns_fig.map_diag(plt.hist,bins=30)
+
+
+# %%
+sns.heatmap(tech_rets.dropna(),annot=True)
+
+
+# %%
+sns.heatmap(closing_df,annot=True)
 
 
