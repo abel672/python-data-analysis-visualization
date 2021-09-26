@@ -147,3 +147,31 @@ sns.heatmap(tech_rets.dropna(),annot=True)
 sns.heatmap(closing_df,annot=True)
 
 
+# %%
+rets = tech_rets.dropna()
+
+
+# %%
+area = np.pi*20
+
+plt.scatter(rets.mean(),rets.std(),s = area)
+
+plt.ylim([0.01,0.025])
+plt.xlim([-0.003,0.004])
+
+plt.xlabel('Expected Return')
+plt.ylabel('Risk')
+
+for label, x, y in zip(rets.columns, rets.mean(), rets.std()):
+    plt.annotate(
+        label,
+        xy = (x, y), xytext = (50, 50),
+        textcoords = 'offset points', ha = 'right', va = 'bottom',
+        arrowprops = dict(arrowstyle = '-', connectionstyle = 'arc3,rad=-0.3')
+    )
+
+
+# %%
+
+
+
