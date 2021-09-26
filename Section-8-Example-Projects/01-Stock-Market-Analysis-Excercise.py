@@ -8,8 +8,6 @@ import pandas as pd
 from pandas import Series, DataFrame
 import numpy as np
 
-# %% [markdown]
-# 
 
 # %%
 import matplotlib.pyplot as plt
@@ -29,9 +27,17 @@ from datetime import datetime
 # %%
 from __future__ import division
 
+# %% [markdown]
+# Congrats on finishing the Stock Market Data Analysis project! Here are some additional quesitons and excercises for you to do:
+# 
+# 1.) Estimate the values at risk using both methods we learned in this project for a stock not related to technology.
+# 
+# 2.) Build a practice portfolio and see how well you can predict you risk values with real stock information!
+# 
+# 3.) Look further into correlatino of two stocks and see if that gives you any insight into future possible stock prices.
 
 # %%
-tech_list = ['AAPL','GOOG','MSFT','AMZN']
+food_list = ['WEAT','SOYB','CORN','CANE']
 
 
 # %%
@@ -41,54 +47,29 @@ start = datetime(end.year-1, end.month, end.day)
 
 
 # %%
-for stock in tech_list:
+for stock in food_list:
     globals()[stock] = DataReader(stock,data_source='yahoo',start=start,end=end)
 
 
 # %%
-AAPL.head()
+WEAT.head()
 
 
 # %%
-AAPL.info()
-
-
-# %%
-AAPL['Adj Close'].plot(legend=True,figsize=(10,4))
-
-
-# %%
-AAPL['Volume'].plot(legend=True,figsize=(10,4))
-
-
-# %%
-# Moving Averages
+# Moving Average
 ma_day = [10,20,50]
 
 for ma in ma_day:
     column_name = "MA for %s days" %(str(ma))
-    AAPL[column_name] = AAPL['Adj Close'].rolling(ma).mean()
+    WEAT[column_name] = WEAT['Adj Close'].rolling(ma).mean()
 
 
 # %%
-AAPL[['Adj Close','MA for 10 days','MA for 20 days','MA for 50 days']].plot(subplots=False,figsize=(10,4))
+WEAT[['Adj Close','MA for 10 days','MA for 20 days','MA for 50 days']].plot(subplots=False,figsize=(10,4))
 
 
 # %%
-AAPL['Daily Return'] = AAPL['Adj Close'].pct_change()
-AAPL['Daily Return'].plot(figsize=(10,4),legend=True,linestyle='--',marker='o')
-
-
-# %%
-sns.displot(AAPL['Daily Return'].dropna(),bins=100,color='purple')
-
-
-# %%
-AAPL['Daily Return'].hist(bins=100)
-
-
-# %%
-closing_df = DataReader(tech_list,'yahoo',start,end)['Adj Close']
+closing_df = DataReader(food_list,'yahoo',start,end)['Adj Close']
 
 
 # %%
@@ -96,31 +77,23 @@ closing_df.head()
 
 
 # %%
-tech_rets = closing_df.pct_change()
+food_rets = closing_df.pct_change()
 
 
 # %%
-tech_rets.head()
+food_rets.head()
 
 
 # %%
-sns.jointplot(x='GOOG',y='GOOG',data=tech_rets,kind='scatter',color='seagreen')
+sns.jointplot(x='WEAT',y='CORN',data=food_rets,kind='scatter',color='seagreen')
 
 
 # %%
-sns.jointplot(x='GOOG',y='MSFT',data=tech_rets,kind='scatter')
+sns.pairplot(food_rets.dropna())
 
 
 # %%
-url = 'https://en.wikipedia.org/wiki/Pearson_correlation_coefficient'
-
-
-# %%
-sns.pairplot(tech_rets.dropna())
-
-
-# %%
-returns_fig = sns.PairGrid(tech_rets.dropna())
+returns_fig = sns.PairGrid(food_rets.dropna())
 
 returns_fig.map_upper(plt.scatter,color='purple')
 
@@ -140,16 +113,8 @@ returns_fig.map_diag(plt.hist,bins=30)
 
 
 # %%
-sns.heatmap(tech_rets.dropna(),annot=True)
-
-
-# %%
-sns.heatmap(closing_df,annot=True)
-
-
-# %%
-# Risk Analysis
-rets = tech_rets.dropna()
+# 1. Risk Analysis
+rets = food_rets.dropna()
 
 
 # %%
@@ -166,34 +131,27 @@ plt.ylabel('Risk')
 for label, x, y in zip(rets.columns, rets.mean(), rets.std()):
     plt.annotate(
         label,
-        xy = (x, y), xytext = (50, 50),
+        xy= (x, y), xytext = (50, 50),
         textcoords = 'offset points', ha = 'right', va = 'bottom',
         arrowprops = dict(arrowstyle = '-', connectionstyle = 'arc3,rad=-0.3')
     )
 
 
 # %%
-sns.displot(AAPL['Daily Return'].dropna(),bins=100,color='purple')
-
-
-# %%
-rets['AAPL'].quantile(0.05)
-
-
-# %%
+# Predict future stock
 days = 365
 
 dt = 1/days
 
-mu = rets.mean()['GOOG'] # average daily returns
+mu = rets.mean()['WEAT']
 
-sigma = rets.std()['GOOG'] # standard deviation in those returns
+sigma = rets.std()['WEAT']
 
 
 # %%
 def stock_monte_carlo(start_price,days,mu,sigma):
 
-    price = np.zeros(days) # arrays of 0, with the length of the number of given days
+    price = np.zeros(days)
     price[0] = start_price
 
     shock = np.zeros(days)
@@ -211,18 +169,11 @@ def stock_monte_carlo(start_price,days,mu,sigma):
 
 
 # %%
-GOOG.head()
+WEAT.head()
 
 
 # %%
-start_price = 1474.209961
-
-for run in range(100):
-    plt.plot(stock_monte_carlo(start_price, days, mu, sigma))
-
-plt.xlabel('Days')
-plt.ylabel('Price')
-plt.title('Monte Carlo Analysis for Google')
+start_price = 5.42
 
 
 # %%
@@ -235,7 +186,7 @@ for run in range(runs):
 
 
 # %%
-q = np.percentile(simulations,1)
+q = np.percentile(simulations, 1)
 
 plt.hist(simulations, bins=200)
 
@@ -254,14 +205,6 @@ plt.figtext(0.15, 0.6, 'q(0.99): $%.2f' % q)
 plt.axvline(x=q, linewidth=4, color='r')
 
 # Title
-plt.title(u'Final price distribution for Google Stock after %s days' % days, weight='bold')
+plt.title(u'Final price distribution for Wheat Stock after %s days' % days, weight='bold')
 
-# %% [markdown]
-# Congrats on finishing the Stock Market Data Analysis project! Here are some additional quesitons and excercises for you to do:
-# 
-# 1.) Estimate the values at risk using both methods we learned in this project for a stock not related to technology.
-# 
-# 2.) Build a practice portfolio and see how well you can predict you risk values with real stock information!
-# 
-# 3.) Look further into correlatino of two stocks and see if that gives you any insight into future possible stock prices.
 
