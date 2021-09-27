@@ -91,3 +91,73 @@ poll_avg.columns = ['Average','STD']
 
 # %%
 poll_avg
+
+
+# %%
+# Quick time series analysis
+poll_df.head()
+
+
+# %%
+poll_df.plot(x='End Date',y=['Obama','Romney','Undecided'],linestyle='',marker='o')
+
+
+# %%
+# difference vs time
+from datetime import datetime
+
+
+# %%
+poll_df['Difference'] = (poll_df.Obama - poll_df.Romney) / 100
+
+poll_df.head()
+
+
+# %%
+poll_df = poll_df.groupby(['Start Date'],as_index=False).mean() # To keep the original indexes
+
+poll_df.head()
+
+
+# %%
+poll_df.plot(x='Start Date',y='Difference',figsize=(12,4),marker='o',linestyle='-',color='purple')
+
+
+# %%
+# Exercise: Look for the particular dates when Romney won .min() is the hint for this.
+lower_rate = poll_df['Difference'].min()
+poll_df.loc[poll_df['Difference'] == lower_rate]
+
+
+# %%
+# Markdown debates in October 2012
+row_in = 0
+xlimit = []
+
+for date in poll_df['Start Date']:
+    if date[0:7] == '2012-10':
+        xlimit.append(row_in)
+        row_in += 1
+    else:
+        row_in += 1
+
+xlimit_min = min(xlimit)
+xlimit_max = max(xlimit)
+
+print(xlimit_min)
+print(xlimit_max)
+
+
+# %%
+poll_df.plot(x='Start Date',y='Difference',figsize=(12,4),marker='o',linestyle='-',color='purple',xlim=(xlimit_min, xlimit_max))
+
+# Oct 3rd
+plt.axvline(x=xlimit_min+2,linewidth=4,color='grey')
+
+# Oct 11th
+plt.axvline(x=xlimit_min+10,linewidth=4,color='grey')
+
+# Oct 22nd
+plt.axvline(x=xlimit_min+21,linewidth=4,color='grey')
+
+
