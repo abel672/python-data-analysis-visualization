@@ -160,4 +160,71 @@ plt.axvline(x=xlimit_min+10,linewidth=4,color='grey')
 # Oct 22nd
 plt.axvline(x=xlimit_min+21,linewidth=4,color='grey')
 
+# %% [markdown]
+# # Donor Data Set
+# Let's go ahead and switch gears and take a look at a data set consisting of information on donations to the federal campaign.
+# 
+# This is going to be the biggest data set we've looked at so far. You can download it here , then make sure to save it to the same folder your iPython Notebooks are in.
+# 
+# The questions we will be trying to answer while looking at this Data Set is:
+# 
+# 1.) How much was donated and what was the average donation?
+# 
+# 2.) How did the donations differ between candidates?
+# 
+# 3.) How did the donations differ between Democrats and Republicans?
+# 
+# 4.) What were the demographics of the donors?
+# 
+# 5.) Is there a pattern to donation amounts?
+# %% [markdown]
+# 
+
+# %%
+donor_df = pd.read_csv('Election_Donor_Data.csv')
+
+
+# %%
+donor_df.info()
+
+
+# %%
+donor_df.head()
+
+
+# %%
+donor_df['contb_receipt_amt'].value_counts()
+
+
+# %%
+donor_mean = donor_df['contb_receipt_amt'].mean()
+
+donor_std = donor_df['contb_receipt_amt'].std()
+
+print('The average donation was {0:.2f} with a std {1:.2f}'.format(donor_mean,donor_std))
+
+
+# %%
+top_donor = donor_df['contb_receipt_amt'].copy()
+
+top_donor.sort_values()
+
+top_donor
+
+
+# %%
+top_donor = top_donor[top_donor > 0] # filtering positive values
+
+top_donor.sort_values()
+
+
+# %%
+top_donor.value_counts().head(10)
+
+
+# %%
+com_don = top_donor[top_donor < 2500]
+
+com_don.hist(bins=100)
+
 
