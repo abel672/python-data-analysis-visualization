@@ -228,3 +228,138 @@ com_don = top_donor[top_donor < 2500]
 com_don.hist(bins=100)
 
 
+# %%
+# Separate donations by party
+
+
+# %%
+# Create parties column
+candidates = donor_df.cand_nm.unique()
+
+candidates
+
+
+# %%
+
+# Dictionary of party affiliation
+party_map = {'Bachmann, Michelle': 'Republican',
+            'Cain, Herman': 'Republican',
+            'Gingrich, Newt': 'Republican',
+            'Huntsman, Jon': 'Republican',
+            'Johnson, Gary Earl': 'Republican',
+            'McCotter, Thaddeus G': 'Republican',
+            'Obama, Barack': 'Democrat',
+            'Paul, Ron': 'Republican',
+            'Pawlenty, Timothy': 'Republican',
+            'Perry, Rick': 'Republican',
+            "Roemer, Charles E. 'Buddy' III": 'Republican',
+            'Romney, Mitt': 'Republican',
+            'Santorum, Rick': 'Republican'}
+
+# Now map the party with candidate
+donor_df['Party'] = donor_df.cand_nm.map(party_map)
+
+
+# %%
+"""
+for i in range(0, len(donor_df)):
+    if donor_df.cand_nm[i] == 'Obama, Barack':
+        donor_df['Party'][i] = 'Democrat'
+    else:
+        donor_df['Party'][i] = 'Republican'
+"""
+
+
+# %%
+donor_df = donor_df[donor_df.contb_receipt_amt > 0]
+
+
+# %%
+donor_df.head()
+
+
+# %%
+donor_df.groupby('cand_nm')['contb_receipt_amt'].count() # how many people donated to each campaign
+
+
+# %%
+donor_df.groupby('cand_nm')['contb_receipt_amt'].sum() # amount of dollars contributed for each campaign
+
+
+# %%
+cand_amount = donor_df.groupby('cand_nm')['contb_receipt_amt'].sum()
+
+i = 0
+
+for don in cand_amount:
+    print('The candidate {0} raise {1:.0f} dollars'.format(cand_amount.index[i],don))
+    print('\n')
+    i += 1
+
+
+# %%
+cand_amount.plot(kind='bar')
+
+
+# %%
+donor_df.groupby('Party')['contb_receipt_amt'].sum().plot(kind='bar')
+
+
+# %%
+occupation_df = donor_df.pivot_table('contb_receipt_amt',
+                                    index='contbr_occupation',
+                                    columns='Party',
+                                    aggfunc='sum')
+
+
+# %%
+occupation_df.head()
+
+
+# %%
+occupation_df.tail()
+
+
+# %%
+occupation_df.shape
+
+
+# %%
+occupation_df = occupation_df[occupation_df.sum(1) > 1000000]
+
+
+# %%
+occupation_df.shape
+
+
+# %%
+occupation_df.plot(kind='bar')  # not very clear
+
+
+# %%
+occupation_df.plot(kind='barh',figsize=(10,12),cmap='seismic') # more clear (bigger size and horizontal)
+
+
+# %%
+occupation_df.drop(['INFORMATION REQUESTED PER BEST EFFORTS','INFORMATION REQUESTED'],axis=0,inplace=True) # inplace=True is a permanent effect into the DataFrame
+
+
+# %%
+# merging the CEO columns into one
+occupation_df.loc['CEO'] = occupation_df.loc['CEO'] + occupation_df.loc['C.E.O.']
+
+occupation_df.drop('C.E.O.',inplace=True)
+
+
+# %%
+occupation_df.plot(kind='barh',figsize=(10,12),cmap='seismic')
+
+# %% [markdown]
+# 
+# Great Job!
+# There's still so much to discover in these rich datasets! Come up with your own political questions you want answered! Or just play around with different methods of visualizing the data!
+# 
+# For more on general data analysis of politics, I highly suggest the 538[https://fivethirtyeight.com/politics/] website!
+# 
+# Again, great job on getting through the course this far! Go ahead and search the web for more data to discover!
+
