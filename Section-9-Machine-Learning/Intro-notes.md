@@ -43,4 +43,4 @@ All resources to check: https://github.com/jmportilla/Udemy---Machine-Learning/b
 
 
 Linear regression, The Least Square Method tutorial: https://www.youtube.com/watch?v=Qa2APhWjQPc
-  Notebook: https://github.com/jmportilla/Udemy---Machine-Learning/blob/master/Supervised%20Learning%20-%20%20Linear%20Regression.ipynb
+  Notebook Supervised Learning: https://github.com/jmportilla/Udemy---Machine-Learning/blob/master/Supervised%20Learning%20-%20%20Linear%20Regression.ipynb
