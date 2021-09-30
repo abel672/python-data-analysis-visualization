@@ -40,3 +40,7 @@ All resources to check: https://github.com/jmportilla/Udemy---Machine-Learning/b
   2) Unsupervised Learning: Here the data has not labels, we are interested in finding similarities between the objects in question. You can think on unsupervised learning as a means of discovering labels from the data itself.
 
     Example: Given a mixture of sounds sources, try to separate the sources of each particular sound.
+
+
+Linear regression, The Least Square Method tutorial: https://www.youtube.com/watch?v=Qa2APhWjQPc
+  Notebook: https://github.com/jmportilla/Udemy---Machine-Learning/blob/master/Supervised%20Learning%20-%20%20Linear%20Regression.ipynb
