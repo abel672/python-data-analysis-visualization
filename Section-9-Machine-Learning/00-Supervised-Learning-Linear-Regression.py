@@ -204,4 +204,78 @@ coeff_df['Coefficient Estimate'] = Series(lreg.coef_)
 
 coeff_df
 
+# %% [markdown]
+# 
+# ## Step 7: Using Training and Validation¶
+# 
+# In a dataset a training set is implemented to build up a model, while a validation set is used to validate the model built. Data points in the training set are excluded from the validation set. The correct way to pick out samples from your dataset to be part either the training or validation (also called test) set is randomly.
+# 
+# Fortunately, scikit learn has a built in function specifically for this called train_test_split.
+# 
+# The parameters passed are your X and Y, then optionally test_size parameter, representing the proportion of the dataset to include in the test split. As well a train_size parameter. ou can learn more about these parameters [here](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html)
+
+# %%
+import sklearn.model_selection
+
+
+# %%
+# By splitting our data in train and test set, we can test how good our regression model is
+X_train, X_test, Y_train, Y_test = sklearn.model_selection.train_test_split(X,boston_df.Price)
+
+
+# %%
+print(X_train.shape, X_test.shape, Y_train.shape, Y_test.shape)
+
+# %% [markdown]
+# ## Step 8: Predicting Prices
+# 
+# Now that we have our training and testing sets, let's go ahead and try to use them to predict house prices. We'll use our training set for the prediction and then use our testing set for validation.
+
+# %%
+lreg = LinearRegression()
+
+lreg.fit(X_train,Y_train) # Fitting training data to this Linear Regression
+
+
+# %%
+# Predictions data sets
+pred_train = lreg.predict(X_train)
+pred_test = lreg.predict(X_test)
+
+
+# %%
+print("Fit a model X_train, and calculate the Mean Square Error (MSE) with Y_train: %.2f " % np.mean((Y_train - pred_train)**2))
+
+print("Fit a model X_train, and calculate the Mean Square Error (MSE) with X_test and Y_test: %.2f " % np.mean((Y_test - pred_test)**2))
+
+# %% [markdown]
+# 
+# ## Step 9 : Residual Plots
+# 
+# In regression analysis, the difference between the observed value of the dependent variable (y) and the predicted value (ŷ) is called the residual (e). Each data point has one residual, so that:
+# 
+# $$Residual = Observed\:value - Predicted\:value $$
+# 
+# 
+# You can think of these residuals in the same way as the D value we discussed earlier, in this case however, there were multiple data points considered.
+# 
+# A residual plot is a graph that shows the residuals on the vertical axis and the independent variable on the horizontal axis. If the points in a residual plot are randomly dispersed around the horizontal axis, a linear regression model is appropriate for the data; otherwise, a non-linear model is more appropriate.
+# 
+# Residual plots are a good way to visualize the errors in your data. If you have done a good job then your data should be randomly scattered around line zero. If there is some strucutre or pattern, that means your model is not capturing some thing. There could be an interaction between 2 variables that you're not considering, or may be you are measuring time dependent data. If this is the case go back to your model and check your data set closely.
+# 
+# So now let's go ahead and create the residual plot. For more info on the residual plots check out this great [link](http://blog.minitab.com/blog/adventures-in-statistics/why-you-need-to-check-your-residual-plots-for-regression-analysis).
+
+# %%
+train = plt.scatter(pred_train,(pred_train - Y_train),c='b',alpha=0.5) # pred_train - Y_train = Residual
+
+test = plt.scatter(pred_test,(pred_test - Y_test),c='r',alpha=0.5) # pred_test - Y_test = Residual
+
+plt.hlines(y=0,xmin=-10,xmax=50,colors='black')
+
+plt.legend((train, test),('Training','Test'),loc='lower left')
+
+plt.title('Residual Plots')
+
+# %% [markdown]
+# That's it for this lesson. Linear regression is a very broad topic, theres a ton of great information in the sci kit learn documentation, and I encourage you to check it out here: [http://scikit-learn.org/stable/modules/linear_model.html#linear-model](http://scikit-learn.org/stable/modules/linear_model.html#linear-model)
 
