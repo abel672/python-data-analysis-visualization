@@ -16,7 +16,7 @@ import math
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set_style('whitegrid')
-get_ipython().run_line_magic('matplotlib', '')
+get_ipython().run_line_magic('matplotlib', 'inline')
 
 # Machine Learning Imports
 from sklearn.linear_model import LogisticRegression
@@ -78,6 +78,59 @@ plt.title(' Logistic Function ')
 # 4.) Logistic Regression [entire tutorial](https://www.youtube.com/watch?v=yIYKR4sgzI8&list=PLblh5JKOoLUKxzEP5HA2d-Li7IJkHfXSe&ab_channel=StatQuestwithJoshStarmer)
 # 
 # Scroll down to the bottom for more resources similar to this lecture!
+# %% [markdown]
+# ## Part 3: Dataset Analysis
+# 
+# Let us go ahead and take a look at the [dataset](https://www.statsmodels.org/stable/datasets/generated/fair.html)
+
+# %%
+df = sm.datasets.fair.load_pandas().data
+
+
+# %%
+df.head()
+
+
+# %%
+def affair_check(x):
+    if x != 0:
+        return 1
+    else:
+        return 0
+
+
+# %%
+df['Had_Affair'] = df['affairs'].apply(affair_check)
+
+
+# %%
+df
+
+
+# %%
+df.groupby('Had_Affair').mean()
+
+
+# %%
+# It's always a good idea to visualize your data before performing some analysis on it
+sns.catplot(x='age',data=df,hue='Had_Affair',palette='coolwarm',kind='count')
+
+
+# %%
+sns.catplot(x='yrs_married',data=df,hue='Had_Affair',palette='coolwarm',kind='count')
+
+
+# %%
+sns.catplot(x='children',data=df,hue='Had_Affair',palette='coolwarm',kind='count')
+
+
+# %%
+sns.catplot(x='educ',data=df,hue='Had_Affair',palette='coolwarm',kind='count')
+
+
+# %%
+sns.catplot(x='religious',data=df,hue='Had_Affair',palette='coolwarm',kind='count')
+
 
 # %%
 
