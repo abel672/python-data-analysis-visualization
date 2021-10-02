@@ -43,4 +43,17 @@ All resources to check: https://github.com/jmportilla/Udemy---Machine-Learning/b
 
 
 Linear regression, The Least Square Method tutorial: https://www.youtube.com/watch?v=Qa2APhWjQPc
-  Notebook Supervised Learning: https://github.com/jmportilla/Udemy---Machine-Learning/blob/master/Supervised%20Learning%20-%20%20Linear%20Regression.ipynb
+  Notebook Supervised Learning Linear Regression: https://github.com/jmportilla/Udemy---Machine-Learning/blob/master/Supervised%20Learning%20-%20%20Linear%20Regression.ipynb
+
+Logistic Regression
+  Notebook: https://github.com/jmportilla/Udemy---Machine-Learning/blob/master/Supervised%20Learning%20-%20Logistic%20Regression.ipynb
+
+  Extra Math Resources:
+  If you're still interested in a deeper dive into the mathematics, check out these sources:
+    1.) [Andrew Ng's class notes](http://cs229.stanford.edu/notes2020spring/cs229-notes1.pdf) on Logistic Regression (Note: Scroll down)
+
+    2.) [CMU notes Note](http://www.stat.cmu.edu/~cshalizi/uADA/12/lectures/ch12.pdf): Advanced math notation.
+
+    3.) [Wikipedia](https://en.wikipedia.org/wiki/Logistic_regression) has a very extensive look at logistic regression.
+
+    4.) Logistic Regression [entire tutorial](https://www.youtube.com/watch?v=yIYKR4sgzI8&list=PLblh5JKOoLUKxzEP5HA2d-Li7IJkHfXSe&ab_channel=StatQuestwithJoshStarmer)
