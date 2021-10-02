@@ -131,6 +131,56 @@ sns.catplot(x='educ',data=df,hue='Had_Affair',palette='coolwarm',kind='count')
 # %%
 sns.catplot(x='religious',data=df,hue='Had_Affair',palette='coolwarm',kind='count')
 
+# %% [markdown]
+# ## Part 5: Data Preparation
+# 
+# If we look at the data, we'll notice that two columns are unlike the others. Occupation and Husband's Occupation. These columns are in a format know as Categorical Variables. Basically they are in set quantity/category, so that 1.0 and 2.0 are separate variables, not values along a spectrum that goes from 1-2 (e.g. There is no 1.5 for the occupation column). Pandas has a built-in method of getting [dummy variables](https://www.youtube.com/watch?v=bnjPzHQ04Ac&ab_channel=DATAtab) and creating new columns from them.
+
+# %%
+occ_dummies = pd.get_dummies(df['occupation'])
+
+
+# %%
+husb_occ_dummies = pd.get_dummies(df['occupation_husb'])
+
+
+# %%
+occ_dummies.head()
+
+
+# %%
+occ_dummies.columns = ['occ1','occ2','occ3','occ4','occ5','occ6']
+
+
+# %%
+husb_occ_dummies.columns = ['hocc1','hocc2','hocc3','hocc4','hocc5','hocc6']
+
+
+# %%
+X = df.drop(['occupation','occupation_husb','Had_Affair'],axis=1)
+
+
+# %%
+dummies = pd.concat([occ_dummies,husb_occ_dummies],axis=1)
+
+
+# %%
+X.head()
+
+
+# %%
+X = pd.concat([X,dummies],axis=1)
+
+
+# %%
+X.head()
+
+
+# %%
+Y = df.Had_Affair
+
+Y.tail()
+
 
 # %%
 
