@@ -1,5 +1,8 @@
 # To add a new cell, type '# %%'
 # To add a new markdown cell, type '# %% [markdown]'
+# %%
+from IPython import get_ipython
+
 # %% [markdown]
 # Notebook: [https://github.com/jmportilla/Udemy---Machine-Learning/blob/master/Support%20Vector%20Machines.ipynb](https://github.com/jmportilla/Udemy---Machine-Learning/blob/master/Support%20Vector%20Machines.ipynb)
 
@@ -50,4 +53,176 @@ Image(url)
 url='http://i.imgur.com/WuxyO.png'
 Image(url)
 
+# %% [markdown]
+# 
+# ## Part 5: SVM with Sci Kit Learn
+# 
+# Now we are ready to jump into some Python code and Sci Kit Learn, we'll start with some basic imports and we will import Sci Kit Learn along the way while we use it
+
+# %%
+import numpy as np
+import matplotlib.pyplot as plt
+get_ipython().run_line_magic('matplotlib', 'inline')
+
+
+# %%
+from sklearn import datasets
+
+
+# %%
+iris = datasets.load_iris()
+
+X = iris.data
+
+Y = iris.target
+
+
+# %%
+print(iris.DESCR)
+
+# %% [markdown]
+# Now we will import the [SVC](http://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html) (Support Vector Classification) from the [SVM library of Sci Kit Learn](http://scikit-learn.org/stable/modules/svm.html), I encourage you to check out the other types of SVM options in the Sci Kit Learn Documentation!
+
+# %%
+from sklearn.svm import SVC
+
+
+# %%
+model = SVC()
+
+
+# %%
+from sklearn.model_selection import train_test_split
+
+
+# %%
+X_train, X_test, Y_train, Y_test = train_test_split(X,Y, test_size=0.4, random_state=3)
+
+
+# %%
+model.fit(X_train, Y_train)
+
+
+# %%
+from sklearn import metrics
+
+
+# %%
+predicted = model.predict(X_test)
+
+expected = Y_test
+
+
+# %%
+print(metrics.accuracy_score(expected, predicted))
+
+# %% [markdown]
+# Looks like we have achieved a 97.4 % accuracy with Support Vector Classification!
+# 
+# Now that we've gone through a basic implementation of SVM lets go ahead and quickly explore the various kernel types we can use for classification. We can do this by plotting out the boundaries created by each kernel type! We'll start with some imports and by setting up the data.
+# 
+# The four methods we will explore are two linear models, a [Gaussian Radial Basis Function](https://en.wikipedia.org/wiki/Radial_basis_function),and a SVC with a polynomial (3rd Degree) kernel.
+# 
+# The linear models LinearSVC() and SVC(kernel='linear') yield slightly different decision boundaries. This can be a consequence of the following differences:
+# 
+#   LinearSVC minimizes the squared hinge loss while SVC minimizes the regular hinge loss.
+# 
+#   LinearSVC uses the One-vs-All (also known as One-vs-Rest) multiclass reduction while SVC uses the One-vs-One multiclass reduction.
+
+# %%
+from sklearn import svm
+
+
+# %%
+X = iris.data[:,:2] # take all the arrays, and from each array, the first two
+
+Y = iris.target
+
+
+# %%
+C = 1.0 # Regularization parameter for all the models
+
+
+# %%
+svc = svm.SVC(kernel='linear',C=C).fit(X,Y)
+
+
+# %%
+rbf_svc = svm.SVC(kernel='rbf',gamma=0.7,C=C).fit(X,Y)
+
+
+# %%
+poly_svc = svm.SVC(kernel='poly',degree=3,C=C).fit(X,Y)
+
+
+# %%
+lin_svc = svm.LinearSVC(C=C).fit(X,Y)
+
+
+# %%
+h = 0.02 # Step parameter
+
+# X axis min and max
+x_min = X[:,0].min() - 1
+x_max = X[:,0].max() + 1
+
+
+# %%
+# Y axis min and max
+y_min = X[:,1].min() - 1
+y_max = X[:,1].max() + 1
+
+
+# %%
+# 
+xx, yy = np.meshgrid(np.arange(x_min,x_max,h),np.arange(y_min,y_max,h))
+
+
+# %%
+titles = ['SVC with linear kernel',
+        'LinearSVC (linear kernel)',
+        'SVC with RBF kernel',
+        'SVC with polynomial (degree 3) kernel']
+
+
+# %%
+for i,clf in enumerate((svc,lin_svc,rbf_svc,poly_svc)):
+    plt.figure(figsize=(15,15))
+
+    plt.subplot(2,2,i+1)
+
+    plt.subplots_adjust(wspace=0.4,hspace=0.4)
+
+    Z = clf.predict(np.c_[xx.ravel(),yy.ravel()])
+
+    Z = Z.reshape(xx.shape)
+
+    plt.contourf(xx, yy, Z, cmap=plt.cm.terrain, alpha=0.5, linewidths=0)
+
+    plt.scatter(X[:,0],X[:,1],c=Y,cmap=plt.cm.Dark2)
+
+    plt.xlabel('Sepal length')
+    plt.ylabel('Sepal width')
+    plt.xlim(xx.min(),xx.max())
+    plt.ylim(yy.min(),yy.max())
+
+    plt.xticks(())
+    plt.yticks(())
+    plt.title(titles[i])
+
+# %% [markdown]
+# 
+# ## Part 6: Additional Resources
+# 
+# 1.) [Microsoft Research Paper SVM Tutorial](https://www.microsoft.com/en-us/research/publication/a-tutorial-on-support-vector-machines-for-pattern-recognition/?from=http%3A%2F%2Fresearch.microsoft.com%2Fpubs%2F67119%2Fsvmtutorial.pdf)
+# 
+# 2.) [StatSoft Online Textbook](http://www.statsoft.com/Textbook/Support-Vector-Machines)
+# 
+# 3.) [Sci Kit Learn Documentation](https://scikit-learn.org/stable/modules/svm.html)
+# 
+# 4.) [Wikipedia](https://en.wikipedia.org/wiki/Support-vector_machine)
+# 
+# 5.) [Columbia Lecture Slides](http://www.cs.columbia.edu/~kathy/cs4701/documents/jason_svm_tutorial.pdf)
+# 
+# 6.) Andrew Ng's Class Notes
 
