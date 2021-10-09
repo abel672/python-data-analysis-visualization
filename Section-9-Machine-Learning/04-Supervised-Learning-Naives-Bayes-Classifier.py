@@ -23,7 +23,7 @@
 # %% [markdown]
 # ## Part 2: Bayes' Theorem
 # 
-# First, for a quick introduction to Bayes' Theorem, check out the [Bayes' Theorem Lecture](https://github.com/jmportilla/Statistics-Notes/blob/master/Bayes'%20Theorem.ipynb) in the statistics appendix portion of this course, in order ot fully understand Naive Bayes, you'll need a complete understanding of the Bayes' Theorem. Also this [article](https://www.countbayesie.com/blog/2015/2/18/bayes-theorem-with-lego)
+# First, for a quick introduction to Bayes' Theorem, check out the [Bayes' Theorem Lecture](https://github.com/jmportilla/Statistics-Notes/blob/master/Bayes'%20Theorem.ipynb) in the statistics appendix portion of this course, in order ot fully understand Naive Bayes, you'll need a complete understanding of the Bayes' Theorem. Also this [article](https://www.countbayesie.com/blog/2015/2/18/bayes-theorem-with-lego) and this [tutorial](https://www.youtube.com/watch?v=O2L2Uv9pdDA&ab_channel=StatQuestwithJoshStarmer)
 # %% [markdown]
 # ## Part 4: Naive Bayes Classifier Mathematics Overview
 # 
@@ -38,8 +38,74 @@
 # $$P(y \mid x_1, \dots, x_n) = \frac{P(y) \prod_{i=1}^{n} P(x_i \mid y)}
 #                                  {P(x_1, \dots, x_n)}$$
 # We now have a relationship between the target and the features using Bayes Theorem along with a Naive Assumption that all features are independent.
+# %% [markdown]
+# ## Part 7: Gaussian Naive Bayes with SciKit Learn
+# 
+# We'll start by importing the usual.
 
 # %%
+import pandas as pd
+from pandas import Series, DataFrame
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn import datasets
+from sklearn import metrics
+from sklearn.naive_bayes import GaussianNB
 
 
+# %%
+# load the iris dataset
+iris = datasets.load_iris()
+
+X = iris.data
+
+Y = iris.target
+
+print(iris.DESCR)
+
+
+# %%
+model = GaussianNB() # Fit a Naive Bayes model to the data
+
+
+# %%
+# Split the data into Training and Testing sets
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y)
+
+
+# %%
+# Fit the training model
+model.fit(X_train, Y_train)
+
+
+# %%
+# Predicted outcomes
+predicted = model.predict(X_test)
+
+# Actual Expected Outcomes
+expected = Y_test
+
+
+# %%
+# See the metrics for performance
+print(metrics.accuracy_score(expected, predicted))
+
+# %% [markdown]
+# ## Part 8: More Resources¶
+# 
+# There are plenty more resources and types of Naive Bayes Classifiers, For more resources on Naive Bayes, check out the following links:
+# 
+# 1.) [SciKit Learn Documentation](https://scikit-learn.org/stable/modules/naive_bayes.html)
+# 
+# 2.) [Naive Bayes with NLTK](http://slendermeans.org/ml4h-ch3.html)
+# 
+# 3.) Andrew Ng's Class Notes
+# 
+# 4.) [Andrew Ng's Video Lecture on Naive Bayes](https://www.youtube.com/watch?v=z5UQyCESW64&ab_channel=WangZhiyang)
+# 
+# 5.) [UC Berkeley Lecture by Pieter Abbeel](https://www.youtube.com/watch?v=DNvwfNEiKvw&ab_channel=CS188Spring2013)
 
