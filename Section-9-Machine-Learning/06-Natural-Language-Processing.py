@@ -237,8 +237,143 @@ print('Shape of Sparse Matrix: ', messages_bow.shape)
 print('Amount of Non-Zero occurences: ', messages_bow.nnz)
 print('Sparsity: %.2f%%' % (100.0 * messages_bow.nnz / (messages_bow.shape[0] * messages_bow.shape[1])))
 
+# %% [markdown]
+# After the counting, the term weighting and normalization can be done with [TF-IDF](https://en.wikipedia.org/wiki/Tf%E2%80%93idf), using scikit-learn's TfidfTransformer.
+# %% [markdown]
+# ## So what is TF-IDF?¶
+# 
+# TF-IDF stands for term frequency-inverse document frequency, and the tf-idf weight is a weight often used in information retrieval and text mining. This weight is a statistical measure used to evaluate how important a word is to a document in a collection or corpus. The importance increases proportionally to the number of times a word appears in the document but is offset by the frequency of the word in the corpus. Variations of the tf-idf weighting scheme are often used by search engines as a central tool in scoring and ranking a document's relevance given a user query.
+# 
+# One of the simplest ranking functions is computed by summing the tf-idf for each query term; many more sophisticated ranking functions are variants of this simple model.
+# 
+# Typically, the tf-idf weight is composed by two terms: the first computes the normalized Term Frequency (TF), aka. the number of times a word appears in a document, divided by the total number of words in that document; the second term is the Inverse Document Frequency (IDF), computed as the logarithm of the number of the documents in the corpus divided by the number of documents where the specific term appears.
+# 
+# **TF: Term Frequency**, which measures how frequently a term occurs in a document. Since every document is different in length, it is possible that a term would appear much more times in long documents than shorter ones. Thus, the term frequency is often divided by the document length (aka. the total number of terms in the document) as a way of normalization:
+# 
+# TF(t) = (Number of times term t appears in a document) / (Total number of terms in the document).
+# 
+# **IDF: Inverse Document Frequency**, which measures how important a term is. While computing TF, all terms are considered equally important. However it is known that certain terms, such as "is", "of", and "that", may appear a lot of times but have little importance. Thus we need to weigh down the frequent terms while scale up the rare ones, by computing the following:
+# 
+# IDF(t) = log_e(Total number of documents / Number of documents with term t in it).
+# 
+# See below for a simple example.
+# 
+# **Example:**
+# 
+# Consider a document containing 100 words wherein the word cat appears 3 times.
+# 
+# The term frequency (i.e., tf) for cat is then (3 / 100) = 0.03. Now, assume we have 10 million documents and the word cat appears in one thousand of these. Then, the inverse document frequency (i.e., idf) is calculated as log(10,000,000 / 1,000) = 4. Thus, the Tf-idf weight is the product of these quantities: 0.03 * 4 = 0.12.
+# %% [markdown]
+# ## Lecture 4
 
 # %%
+from sklearn.feature_extraction.text import TfidfTransformer # Inverse Document Frequency
+
+tfidf_transformer = TfidfTransformer().fit(messages_bow) # Training the model
 
 
+# %%
+tfidf4 = tfidf_transformer.transform(bow4) # Transforming a bag of words
+
+
+# %%
+print(tfidf4)
+
+
+# %%
+print(tfidf_transformer.idf_[bow_transformer.vocabulary_['u']]) # Finding out specific Inverse Document Frequency Number
+
+
+# %%
+messages_tfidf = tfidf_transformer.transform(messages_bow) # Transforming all bag of words
+
+
+# %%
+print(messages_tfidf.shape)
+
+# %% [markdown]
+# ## Part 5: Training a model¶
+# 
+# With messages represented as vectors, we can finally train our spam/ham classifier. Now we can actually use almost any sort of classification algorithms. For a [variety of reasons](http://www.inf.ed.ac.uk/teaching/courses/inf2b/learnnotes/inf2b-learn-note07-2up.pdf), the Naive Bayes classifier algorithm is a good choice.
+# 
+# We'll be using scikit-learn here, choosing the [Naive Bayes classifier](http://en.wikipedia.org/wiki/Naive_Bayes_classifier) to start with:
+
+# %%
+from sklearn.naive_bayes import MultinomialNB
+
+
+# %%
+spam_detect_model = MultinomialNB().fit(messages_tfidf, messages['labels'])
+
+
+# %%
+print('Predicted: ', spam_detect_model.predict(tfidf4)[0]) # Predicted result
+print('Expected: ', messages['labels'][3]) # Real result from our set
+
+# %% [markdown]
+# Fantastic! We've developed a model that can attempt to predict spam vs ham classification!
+# %% [markdown]
+# ## Part 6: Model Evaluation¶
+# 
+# Now we want to determine how well our model will do overall on the entire dataset. Let's beginby getting all the predictions:
+
+# %%
+all_predictions = spam_detect_model.predict(messages_tfidf)
+print(all_predictions)
+
+# %% [markdown]
+# We can use SciKit Learn's built-in classification report, which returns [precision and recall](https://www.youtube.com/watch?v=qWfzIYCvBqo&ab_channel=KimberlyFessel), [f1-score](https://www.youtube.com/watch?v=8d3JbbSj-I8&ab_channel=Scarlett%27sLog), and a column for support (meaning how many cases supported that classification). Check out the links for more detailed info on each of these metrics and the figure below:
+
+# %%
+# metrics
+from sklearn.metrics import classification_report
+print(classification_report(messages['labels'], all_predictions))
+
+
+# %%
+from sklearn.model_selection import train_test_split
+
+msg_train, msg_test, label_train, label_test = train_test_split(messages['message'], messages['labels'], test_size=0.2)
+
+
+# %%
+print(len(msg_train), len(msg_test), len(msg_train), len(msg_test))
+
+# %% [markdown]
+# ## Part 7: Creating a Data Pipeline¶
+# 
+# Let's run our model again and then predict off the test set. We will use SciKit Learn's [pipeline](http://scikit-learn.org/stable/modules/pipeline.html) capabilities to store a pipeline of workflow. This will allow us to set up all the transformations that we will do to the data for future use. Let's see an example of how it works:
+
+# %%
+from sklearn.pipeline import Pipeline
+
+
+# %%
+pipeline = Pipeline([('bow', CountVectorizer(analyzer=text_process)),
+                        ('tfidf', TfidfTransformer()),
+                        ('classifier', MultinomialNB())])
+
+
+# %%
+pipeline.fit(msg_train, label_train)
+
+
+# %%
+predictions = pipeline.predict(msg_test)
+
+
+# %%
+print(classification_report(predictions, label_test))
+
+# %% [markdown]
+# 
+# ## More Resources
+# 
+# Check out the links below for more info on Natural Language Processing:
+# 
+# [NLTK Book Online](http://www.nltk.org/book/)
+# 
+# [Kaggle Walkthrough](https://www.kaggle.com/c/word2vec-nlp-tutorial)
+# 
+# [SciKit Learn's Tutorial](https://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html)
 
